@@ -15,7 +15,8 @@ import {
   QueryCoreDto,
   ResponseWithPagination,
 } from 'common/dto';
-import { RoleDto } from 'role/role.dto';
+import { NestedPermissionDto } from 'permission/permission.dto';
+import { NestedRoleDto } from 'role/role.dto';
 
 enum LoginMethodEnum {
   local = 'local',
@@ -46,12 +47,6 @@ export class UserDto extends BaseEntityDto {
   @ApiProperty({
     type: 'string',
   })
-  password: string;
-
-  @Expose()
-  @ApiProperty({
-    type: 'string',
-  })
   avatar?: string;
 
   @Expose()
@@ -68,16 +63,26 @@ export class UserDto extends BaseEntityDto {
 
   @Expose()
   @ApiProperty({
-    type: RoleDto,
+    type: NestedRoleDto,
   })
-  role?: RoleDto;
+  @Type(() => NestedRoleDto)
+  role?: NestedRoleDto;
 }
 
-export class UserResponseDto {
+export class DetailUserDto extends UserDto {
   @Expose()
-  @ApiResponseProperty({ type: UserDto })
-  @Type(() => UserDto)
-  user: UserDto;
+  @ApiProperty({
+    type: [NestedPermissionDto],
+  })
+  @Type(() => NestedPermissionDto)
+  permissions: NestedPermissionDto[];
+}
+
+export class UserProfileResponseDto {
+  @Expose()
+  @ApiResponseProperty({ type: DetailUserDto })
+  @Type(() => DetailUserDto)
+  user: DetailUserDto;
 }
 
 const USER_SORT_BY = BASE_SORT_BY;
@@ -109,6 +114,7 @@ export class UpdateUserDto {
   @ApiProperty({ type: 'string', required: false })
   @IsString()
   @Matches(PATTERN_VALIDATION.password)
+  @IsOptional()
   password?: string;
 
   @ApiProperty({ type: 'boolean', required: false })

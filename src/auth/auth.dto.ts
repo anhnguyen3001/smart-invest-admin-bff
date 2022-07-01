@@ -13,11 +13,6 @@ export class LoginDto {
   password: string;
 }
 
-export class LoginSocialDto {
-  @ApiProperty({ type: 'string' })
-  access_token: string;
-}
-
 export class TokenResult {
   @ApiProperty({ type: 'string' })
   @Expose()

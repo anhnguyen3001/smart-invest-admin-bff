@@ -21,10 +21,11 @@ export class AppGuard implements CanActivate {
     const request: Request = context.switchToHttp().getRequest();
 
     const { authorization } = request.headers;
+
     const { data } = await this.iamService.client.get('/me', {
       headers: { authorization },
     });
-    const user = data?.user;
+    const user = data?.data?.user;
     if (!user) {
       throw new AccessDeniedException();
     }

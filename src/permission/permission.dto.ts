@@ -34,6 +34,12 @@ export class PermissionDto {
   code: string;
 }
 
+export class NestedPermissionDto extends PickType(PermissionDto, [
+  'id',
+  'name',
+  'code',
+]) {}
+
 const PERMISSION_SORT_BY = BASE_SORT_BY;
 export class SearchPermissionDto extends QueryCoreDto {
   @ApiProperty({ enum: PERMISSION_SORT_BY, default: 'id', required: false })

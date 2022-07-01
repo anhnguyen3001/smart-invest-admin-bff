@@ -15,6 +15,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { ApiIdParam } from 'common/decorators/request.decorator';
 import { ApiOkBaseResponse } from 'common/decorators/response.decorator';
 import { Identity, RequestParamId } from 'common/dto';
 import {
@@ -81,6 +82,7 @@ export class RoleController {
   @ApiOkBaseResponse(Identity, {
     description: 'Update role successfully',
   })
+  @ApiIdParam()
   async updateRole(
     @Body() dto: UpdateRoleDto,
     @Param() params: RequestParamId,
@@ -100,6 +102,7 @@ export class RoleController {
     status: 204,
     description: 'Delete role successfully',
   })
+  @ApiIdParam()
   async deleteRole(@Param() params: RequestParamId): Promise<void> {
     await this.iamService.client.delete(`/roles/${params.id}`);
   }

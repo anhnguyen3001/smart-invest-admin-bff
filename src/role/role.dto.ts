@@ -36,6 +36,8 @@ export class RoleDto {
   code: string;
 }
 
+export class NestedRoleDto extends PickType(RoleDto, ['id', 'name', 'code']) {}
+
 const ROLE_SORT_BY = BASE_SORT_BY;
 export class SearchRoleDto extends QueryCoreDto {
   @ApiProperty({ enum: ROLE_SORT_BY, default: 'id', required: false })

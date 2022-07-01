@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiCode } from './constants/apiCode';
+import { getCoreErrorHttp } from './utils/response';
 
 export class APIException extends HttpException {
   code: string | number;
@@ -71,19 +72,18 @@ const nestLogger = new Logger('HandleError');
 // Error handler
 @Catch()
 export class GlobalExceptionsFilter implements ExceptionFilter {
-  catch(exception: HttpException, host: ArgumentsHost): Response<unknown> {
+  catch(exception: any, host: ArgumentsHost): Response<unknown> {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
     if (exception instanceof APIException) {
-      nestLogger.warn(exception.toJSON());
-      return response.status(exception.getStatus()).json(exception.toObj());
+      nestLogger.warn(exception.getResponse());
+      return response
+        .status(exception.getStatus())
+        .json(exception.getResponse());
     }
-
     if (exception instanceof HttpException) {
-      nestLogger.error(
-        (exception as any)?.stack || (exception as any)?.message,
-      );
+      nestLogger.warn(exception);
       return response
         .status(exception.getStatus())
         .json(
@@ -95,8 +95,20 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
           ).toObj(),
         );
     }
-
-    nestLogger.error((exception as any)?.stack || (exception as any)?.message);
+    if (exception?.isAxiosError) {
+      if (exception?.response) {
+        nestLogger.warn(exception?.response?.data);
+        return response
+          .status(exception.response.status)
+          .json(exception.response.data);
+      } else {
+        nestLogger.warn(exception);
+        return response
+          .status(HttpStatus.FAILED_DEPENDENCY)
+          .json(new ExternalAPIException('', getCoreErrorHttp(exception)));
+      }
+    }
+    nestLogger.error(exception);
     return response
       .status(500)
       .json(

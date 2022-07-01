@@ -15,6 +15,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { ApiIdParam } from 'common/decorators/request.decorator';
 import { ApiOkBaseResponse } from 'common/decorators/response.decorator';
 import { Identity, RequestParamId } from 'common/dto';
 import {
@@ -84,6 +85,7 @@ export class PermissionController {
   @ApiOkBaseResponse(Identity, {
     description: 'Update permission successfully',
   })
+  @ApiIdParam()
   async updatePermission(
     @Body() dto: UpdatePermissionDto,
     @Param() params: RequestParamId,
@@ -103,6 +105,7 @@ export class PermissionController {
     status: 204,
     description: 'Delete permission successfully',
   })
+  @ApiIdParam()
   async deletePermission(@Param() params: RequestParamId): Promise<void> {
     await this.iamService.client.delete(`/permissions/${params.id}`);
   }

@@ -15,6 +15,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { ApiIdParam } from 'common/decorators/request.decorator';
 import { ApiOkBaseResponse } from 'common/decorators/response.decorator';
 import { Identity, RequestParamId } from 'common/dto';
 import {
@@ -81,6 +82,7 @@ export class RouteController {
   @ApiOkBaseResponse(Identity, {
     description: 'Update route successfully',
   })
+  @ApiIdParam()
   async updateRoute(
     @Body() dto: UpdateRouteDto,
     @Param() params: RequestParamId,
@@ -100,6 +102,7 @@ export class RouteController {
     status: 204,
     description: 'Delete route successfully',
   })
+  @ApiIdParam()
   async deleteRoute(@Param() params: RequestParamId): Promise<void> {
     await this.iamService.client.delete(`/routes/${params.id}`);
   }

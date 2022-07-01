@@ -17,7 +17,6 @@ import { IAMService } from 'external/iam/iam.service';
 import {
   ForgetPasswordDto,
   LoginDto,
-  LoginSocialDto,
   OtpTokenResult,
   ResendOtpQueryDto,
   SignupDto,
@@ -49,41 +48,6 @@ export class AuthController {
     return getBaseResponse<TokenResult>(res, TokenResult);
   }
 
-  @Public()
-  @Get('facebook')
-  @ApiOperation({
-    summary: 'Login Facebook',
-  })
-  @ApiOkBaseResponse(TokenResult, {
-    description: 'Login facebook successfully',
-  })
-  async loginFB(
-    @Query() query: LoginSocialDto,
-  ): Promise<BaseResponse<TokenResult>> {
-    const res: IAMApiResponseInterface = await this.iamService.client
-      .get('/auth/facebook', { params: query })
-      .then((res) => res.data);
-
-    return getBaseResponse<TokenResult>(res, TokenResult);
-  }
-
-  @Public()
-  @Get('google')
-  @ApiOperation({
-    summary: 'Login Google',
-  })
-  @ApiOkBaseResponse(TokenResult, {
-    description: 'Login google successfully',
-  })
-  async loginGoogle(
-    @Query() query: LoginSocialDto,
-  ): Promise<BaseResponse<TokenResult>> {
-    const res: IAMApiResponseInterface = await this.iamService.client
-      .get('/auth/google', { params: query })
-      .then((res) => res.data);
-    return getBaseResponse<TokenResult>(res, TokenResult);
-  }
-
   @Get('logout')
   async logout(@Authorization() authorization: string): Promise<void> {
     await this.iamService.client.get('/auth/logout', {
@@ -100,7 +64,10 @@ export class AuthController {
     description: 'Sign up successfully',
   })
   async signup(@Body() dto: SignupDto): Promise<void> {
-    await this.iamService.client.post('/auth/signup', dto);
+    await this.iamService.client.post('/auth/signup', {
+      ...dto,
+      sendVerifiedEmail: false,
+    });
   }
 
   @Public()

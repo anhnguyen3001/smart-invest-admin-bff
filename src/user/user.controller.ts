@@ -14,7 +14,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { GetUser } from 'common/decorators/request.decorator';
+import { ApiIdParam, GetUser } from 'common/decorators/request.decorator';
 import { ApiOkBaseResponse } from 'common/decorators/response.decorator';
 import { Identity, RequestParamId } from 'common/dto';
 import {
@@ -25,11 +25,11 @@ import { getBaseResponse } from 'common/utils/response';
 import { configService } from 'config/config.service';
 import { IAMService } from 'external/iam/iam.service';
 import {
+  DetailUserDto,
   SearchUserDto,
   SearchUsersResponse,
   UpdateUserDto,
-  UserDto,
-  UserResponseDto,
+  UserProfileResponseDto,
 } from './user.dto';
 
 @ApiBearerAuth()
@@ -65,12 +65,13 @@ export class UserController {
   @ApiOkBaseResponse(Identity, {
     description: 'Update user successfully',
   })
+  @ApiIdParam()
   async updateUser(
     @Body() data: UpdateUserDto,
     @Param() params: RequestParamId,
   ): Promise<BaseResponse<Identity>> {
     const res: IAMApiResponseInterface = await this.iamService.client
-      .post('/permissions', data, { params: { id: params.id } })
+      .post('/users', data, { params: { id: params.id } })
       .then((res) => res.data);
     return getBaseResponse<Identity>(res, Identity);
   }
@@ -84,6 +85,7 @@ export class UserController {
     status: 204,
     description: 'Delete user successfully',
   })
+  @ApiIdParam()
   async deleteRoute(@Param() params: RequestParamId): Promise<void> {
     await this.iamService.client.delete(`/users/${params.id}`);
   }
@@ -92,17 +94,17 @@ export class UserController {
   @ApiOperation({
     summary: 'Get user info',
   })
-  @ApiOkBaseResponse(UserResponseDto, {
+  @ApiOkBaseResponse(UserProfileResponseDto, {
     description: 'Get user info successfully',
   })
   async getUserInfo(
-    @GetUser() user: UserDto,
-  ): Promise<BaseResponse<UserResponseDto>> {
+    @GetUser() user: DetailUserDto,
+  ): Promise<BaseResponse<UserProfileResponseDto>> {
     return getBaseResponse(
       {
         data: { user },
       },
-      UserResponseDto,
+      UserProfileResponseDto,
     );
   }
 }

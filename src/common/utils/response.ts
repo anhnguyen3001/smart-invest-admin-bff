@@ -25,3 +25,17 @@ export const getBaseResponse = <T>(
 
   return instance;
 };
+
+export const getCoreErrorHttp = (err: any) => {
+  if (!!err?.response)
+    return {
+      url: [err?.response?.config?.baseURL, err?.response?.config?.url].join(
+        '',
+      ),
+      status: err?.response?.status,
+      data: err?.response?.data,
+    };
+  else if (!!err.request) {
+    return { url: err.request._currentUrl };
+  } else return err?.message;
+};

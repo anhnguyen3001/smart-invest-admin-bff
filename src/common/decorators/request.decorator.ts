@@ -1,8 +1,10 @@
 import {
+  applyDecorators,
   createParamDecorator,
   ExecutionContext,
   SetMetadata,
 } from '@nestjs/common';
+import { ApiParam } from '@nestjs/swagger';
 
 export const Public = () => SetMetadata('isPublic', true);
 
@@ -30,3 +32,13 @@ export const GetUserId = createParamDecorator(
     return request.user.id;
   },
 );
+
+export const ApiIdParam = () => {
+  return applyDecorators(
+    ApiParam({
+      name: 'id',
+      type: 'number',
+      required: false,
+    }),
+  );
+};
