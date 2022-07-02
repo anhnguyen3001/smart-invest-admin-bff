@@ -14,7 +14,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ApiIdParam, GetUser } from 'common/decorators/request.decorator';
+import { ApiIdParam } from 'common/decorators/request.decorator';
 import { ApiOkBaseResponse } from 'common/decorators/response.decorator';
 import { Identity, RequestParamId } from 'common/dto';
 import {
@@ -24,13 +24,7 @@ import {
 import { getBaseResponse } from 'common/utils/response';
 import { configService } from 'config/config.service';
 import { IAMService } from 'external/iam/iam.service';
-import {
-  DetailUserDto,
-  SearchUserDto,
-  SearchUsersResponse,
-  UpdateUserDto,
-  UserProfileResponseDto,
-} from './user.dto';
+import { SearchUserDto, SearchUsersResponse, UpdateUserDto } from './user.dto';
 
 @ApiBearerAuth()
 @ApiTags('User')
@@ -88,23 +82,5 @@ export class UserController {
   @ApiIdParam()
   async deleteRoute(@Param() params: RequestParamId): Promise<void> {
     await this.iamService.client.delete(`/users/${params.id}`);
-  }
-
-  @Get('me')
-  @ApiOperation({
-    summary: 'Get user info',
-  })
-  @ApiOkBaseResponse(UserProfileResponseDto, {
-    description: 'Get user info successfully',
-  })
-  async getUserInfo(
-    @GetUser() user: DetailUserDto,
-  ): Promise<BaseResponse<UserProfileResponseDto>> {
-    return getBaseResponse(
-      {
-        data: { user },
-      },
-      UserProfileResponseDto,
-    );
   }
 }
