@@ -46,13 +46,30 @@ export class PermissionController {
     summary: 'Get permissions by queries',
   })
   @ApiOkBaseResponse(SearchPermissionsResponse, {
-    description: 'Get roles by queries successfully',
+    description: 'Get permissions by queries successfully',
   })
-  async getListRoles(
+  async getListPermissions(
     @Query() dto: SearchPermissionDto,
   ): Promise<BaseResponse<SearchPermissionsResponse>> {
     const res: IAMApiResponseInterface = await this.iamService.client
       .get('/permissions', { params: dto })
+      .then((res) => res.data);
+    return getBaseResponse<SearchPermissionsResponse>(
+      res,
+      SearchPermissionsResponse,
+    );
+  }
+
+  @Get('/get-all')
+  @ApiOperation({
+    summary: 'Get all permissions',
+  })
+  @ApiOkBaseResponse(SearchPermissionsResponse, {
+    description: 'Get all permissions successfully',
+  })
+  async getAllPermissions(): Promise<BaseResponse<SearchPermissionsResponse>> {
+    const res: IAMApiResponseInterface = await this.iamService.client
+      .get('/permissions', { params: { getAll: true } })
       .then((res) => res.data);
     return getBaseResponse<SearchPermissionsResponse>(
       res,
