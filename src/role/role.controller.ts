@@ -57,6 +57,20 @@ export class RoleController {
     return getBaseResponse<SearchRolesResponse>(res, SearchRolesResponse);
   }
 
+  @Get('/get-all')
+  @ApiOperation({
+    summary: 'Get all roles',
+  })
+  @ApiOkBaseResponse(SearchRolesResponse, {
+    description: 'Get all roles successfully',
+  })
+  async getAllRoles(): Promise<BaseResponse<SearchRolesResponse>> {
+    const res: IAMApiResponseInterface = await this.iamService.client
+      .get('/roles', { params: { getAll: true } })
+      .then((res) => res.data);
+    return getBaseResponse<SearchRolesResponse>(res, SearchRolesResponse);
+  }
+
   @Post()
   @HttpCode(200)
   @ApiOperation({
