@@ -1,8 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Request } from 'express';
+import { UnauthorizedException } from 'auth/auth.exception';
 import { IAMService } from 'external/iam/iam.service';
-import { AccessDeniedException } from '../../auth/auth.exception';
 
 @Injectable()
 export class AppGuard implements CanActivate {
@@ -12,34 +11,39 @@ export class AppGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    return true;
     const isPublic = this.reflector.getAllAndOverride('isPublic', [
       context.getHandler(),
       context.getClass(),
     ]);
     if (isPublic) return true;
 
-    const request: Request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest();
 
     const { authorization } = request.headers;
 
-    const { data } = await this.iamService.client.get('/me', {
-      headers: { authorization },
-    });
-    const user = data?.data?.user;
+    const [userData, routeData] = await Promise.all([
+      this.iamService.client.get('/me', {
+        headers: { authorization },
+      }),
+      this.iamService.client.get('/routes', {
+        params: {
+          path: request.path,
+          method: request.method,
+        },
+      }),
+    ]);
+
+    const user = userData?.data?.user;
     if (!user) {
-      throw new AccessDeniedException();
+      throw new UnauthorizedException();
     }
     request.user = user;
 
-    // Validate authorization to access route
-    await this.iamService.client.get('/routes/access', {
-      params: {
-        userId: user.id,
-        path: request.path,
-        method: request.method,
-      },
-    });
-
-    return true;
+    const route = routeData?.data?.routes?.[0];
+    return (
+      !route.permission ||
+      user.permissions.includes(({ id }) => (id = route.permission.id))
+    );
   }
 }
