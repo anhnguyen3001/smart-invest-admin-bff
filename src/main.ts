@@ -11,7 +11,7 @@ async function bootstrap() {
 
   // Swagger
   const options = new DocumentBuilder()
-    .setTitle('Smart Invest BFF')
+    .setTitle('Smart Invest Admin BFF')
     .setDescription('Smart Invest BFF API')
     .setVersion('1.0.0')
     .addBearerAuth({
@@ -22,7 +22,7 @@ async function bootstrap() {
     })
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('v1/api/docs', app, document);
+  SwaggerModule.setup('v1/docs', app, document);
 
   await app.listen(configService.getPort() || 3000);
 }
