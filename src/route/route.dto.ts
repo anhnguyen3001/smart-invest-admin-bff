@@ -52,7 +52,13 @@ export class CreateRouteDto {
   @IsString()
   @MinLength(1)
   @MaxLength(255)
-  route: string;
+  name: string;
+
+  @ApiProperty({ type: 'string' })
+  @IsString()
+  @MinLength(1)
+  @MaxLength(255)
+  regUri: string;
 
   @ApiProperty({ enum: MethodEnum })
   @IsEnum(MethodEnum)
