@@ -25,7 +25,7 @@ export class RouteDto {
 
   @Expose()
   @ApiProperty({ type: 'string' })
-  route: string;
+  regUri: string;
 
   @Expose()
   @ApiProperty({ enum: MethodEnum })

@@ -43,7 +43,7 @@ export class AuthController {
   })
   async login(@Body() loginDto: LoginDto): Promise<BaseResponse<TokenResult>> {
     const res: IAMApiResponseInterface = await this.iamService.client
-      .post('/auth/login', loginDto)
+      .post('/auth/login', { loginDto })
       .then((res) => res.data);
     return getBaseResponse<TokenResult>(res, TokenResult);
   }
