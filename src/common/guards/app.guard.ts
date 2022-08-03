@@ -11,7 +11,7 @@ export class AppGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    return true;
+    // return true;
     const isPublic = this.reflector.getAllAndOverride('isPublic', [
       context.getHandler(),
       context.getClass(),
@@ -43,7 +43,7 @@ export class AppGuard implements CanActivate {
     const route = routeData?.data?.routes?.[0];
     return (
       !route.permission ||
-      user.permissions.includes(({ id }) => (id = route.permission.id))
+      user.permissions.includes(({ id }) => id === route.permission.id)
     );
   }
 }
