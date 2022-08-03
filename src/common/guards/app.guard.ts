@@ -34,7 +34,7 @@ export class AppGuard implements CanActivate {
       }),
     ]);
 
-    const user = userData?.data?.user;
+    const user = userData?.data?.data?.user;
     if (!user) {
       throw new UnauthorizedException();
     }
@@ -42,7 +42,7 @@ export class AppGuard implements CanActivate {
 
     const route = routeData?.data?.routes?.[0];
     return (
-      !route.permission ||
+      !route?.permission ||
       user.permissions.includes(({ id }) => id === route.permission.id)
     );
   }
