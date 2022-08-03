@@ -10,6 +10,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { BASE_SORT_BY, QueryCoreDto, ResponseWithPagination } from 'common/dto';
+import { NestedPermissionDto } from 'permission/permission.dto';
 
 enum MethodEnum {
   get = 'GET',
@@ -30,6 +31,11 @@ export class RouteDto {
   @Expose()
   @ApiProperty({ enum: MethodEnum })
   method: MethodEnum;
+
+  @Expose()
+  @ApiProperty({ type: NestedPermissionDto })
+  @Type(() => NestedPermissionDto)
+  permission: NestedPermissionDto;
 }
 
 const ROUTE_SORT_BY = BASE_SORT_BY;
