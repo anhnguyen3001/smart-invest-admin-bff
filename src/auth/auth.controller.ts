@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   ApiCreatedResponse,
   ApiOkResponse,
@@ -13,6 +21,7 @@ import {
 } from 'common/types/api-response.type';
 import { getBaseResponse } from 'common/utils/response';
 import { configService } from 'config/config.service';
+import { Request } from 'express';
 import { IAMService } from 'external/iam/iam.service';
 import {
   ForgetPasswordDto,
@@ -41,9 +50,16 @@ export class AuthController {
   @ApiOkBaseResponse(TokenResult, {
     description: 'Login successfully',
   })
-  async login(@Body() loginDto: LoginDto): Promise<BaseResponse<TokenResult>> {
+  async login(
+    @Body() loginDto: LoginDto,
+    @Req() request: Request,
+  ): Promise<BaseResponse<TokenResult>> {
     const res: IAMApiResponseInterface = await this.iamService.client
-      .post('/auth/login', { loginDto })
+      .post('/auth/login', {
+        ...loginDto,
+        path: `admin${request.url}`,
+        method: request.method,
+      })
       .then((res) => res.data);
     return getBaseResponse<TokenResult>(res, TokenResult);
   }
