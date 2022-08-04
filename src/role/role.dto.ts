@@ -15,6 +15,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { BASE_SORT_BY, QueryCoreDto, ResponseWithPagination } from 'common/dto';
+import { NestedPermissionDto } from 'permission/permission.dto';
 
 export class RoleDto {
   @Expose()
@@ -34,6 +35,13 @@ export class RoleDto {
     type: 'string',
   })
   code: string;
+
+  @Expose()
+  @ApiProperty({
+    type: [NestedPermissionDto],
+  })
+  @Type(() => NestedPermissionDto)
+  permissions: [];
 }
 
 export class NestedRoleDto extends PickType(RoleDto, ['id', 'name', 'code']) {}
